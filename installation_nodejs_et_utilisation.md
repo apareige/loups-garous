@@ -8,10 +8,21 @@ Ce guide a été testé sur une machine virtuelle **Linux Debian 12**. Les étap
    ```bash
     sudo apt update
     sudo apt upgrade
-2. **Installer Node.js et npm :** :
+2. **Installer Node.js et npm ** :
    ```bash
     sudo apt install nodejs npm
 3. **Installer Socket.IO (pour la gestion des communications en temps réel)** :
    ```bash
     npm install socket.io
+
+
+## Étapes d'utilisations
+
+1. **télécharger les fichiers** :
+   
+   allez sur git hub et téléchargez les.
+
+2. **utilisations ** :
+   ```bash
+    nodejs [chemin du fichier server.js]
 
