@@ -114,3 +114,9 @@
 
 - Nécessité d'un point d'accès Wi-Fi performant pour éviter les coupures.
 - Compatibilité navigateurs : tester sur Chrome, Firefox, Safari.
+---
+## Contributeurs
+- Youwen Heitz
+- Tom Edel
+- Alexandre Pareige
+
