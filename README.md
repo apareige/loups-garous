@@ -115,6 +115,9 @@
 - Nécessité d'un point d'accès Wi-Fi performant pour éviter les coupures.
 - Compatibilité navigateurs : tester sur Chrome, Firefox, Safari.
 ---
+##Roadmap
+- 
+-
 ## Contributeurs
 - Youwen Heitz
 - Tom Edel
