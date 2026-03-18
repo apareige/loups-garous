@@ -15,6 +15,7 @@
 5. [Schéma Réseau](#5-schéma-réseau)
 6. [Planning Prévisionnel](#6-planning-prévisionnel)
 7. [Risques & Contraintes](#7-risques--contraintes)
+8. [Contributeurs](#8-Contributeurs)
 
 ---
 
@@ -115,11 +116,12 @@
 - Nécessité d'un point d'accès Wi-Fi performant pour éviter les coupures.
 - Compatibilité navigateurs : tester sur Chrome, Firefox, Safari.
 ---
-## Roadmap
-- 
--
-## Contributeurs
+## 8. Contributeurs
 - Youwen Heitz
 - Tom Edel
 - Alexandre Pareige
+---
+## Lien ressource
+- [Drive](https://drive.google.com/drive/folders/1dUYmftqv2jstfRzP8b6EHkhuLbTfFapB?usp=sharing)
+- [Figma](https://www.figma.com/make/xsI5nLe9VTfXa6hX1jh68C/Loup-Garou-Game-Interface?t=Trlt7QsDzKpdXlxa-1)
 
