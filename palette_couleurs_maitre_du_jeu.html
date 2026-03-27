@@ -1,0 +1,91 @@
+
+<style>
+  .palette-wrap { padding: 1.5rem 0; font-family: var(--font-mono); }
+  .section-title { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.12em; text-transform: uppercase; margin: 1.5rem 0 0.6rem; }
+  .section-title:first-child { margin-top: 0; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+  .swatch { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; cursor: pointer; }
+  .swatch-color { width: 72px; height: 52px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.18); transition: transform 0.12s; }
+  .swatch:hover .swatch-color { transform: scale(1.06); }
+  .swatch-name { font-size: 10px; color: var(--color-text-secondary); max-width: 72px; line-height: 1.3; }
+  .swatch-hex { font-size: 10px; color: var(--color-text-tertiary); }
+  .copied-toast { position: fixed; bottom: 1.2rem; left: 50%; transform: translateX(-50%); background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); color: var(--color-text-primary); font-family: var(--font-mono); font-size: 12px; padding: 6px 14px; border-radius: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 99; }
+  .copied-toast.show { opacity: 1; }
+  .bg-group { display: flex; flex-direction: column; gap: 8px; }
+  .bg-row { width: 100%; height: 32px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.15); display: flex; align-items: center; padding: 0 10px; gap: 10px; cursor: pointer; transition: opacity 0.12s; }
+  .bg-row:hover { opacity: 0.82; }
+  .bg-label { font-size: 11px; color: var(--color-text-secondary); }
+  .bg-hex { font-size: 11px; color: var(--color-text-tertiary); margin-left: auto; }
+</style>
+
+<div class="palette-wrap">
+  <div id="toast" class="copied-toast">Copié !</div>
+
+  <div class="section-title">Arrière-plans</div>
+  <div class="bg-group" id="bgs"></div>
+
+  <div class="section-title">Couleurs principales</div>
+  <div class="swatches" id="main"></div>
+
+  <div class="section-title">Textes & bords</div>
+  <div class="swatches" id="texts"></div>
+
+  <div class="section-title">États spéciaux</div>
+  <div class="swatches" id="states"></div>
+</div>
+
+<script>
+const colors = {
+  bgs: [
+    { name: '--bg', hex: '#0d0a06', label: 'Fond principal' },
+    { name: '--bg2', hex: '#160f07', label: 'Fond secondaire' },
+    { name: '--brown-dark', hex: '#1e1208', label: 'Brun foncé' },
+    { name: '--brown-mid', hex: '#2a1a0a', label: 'Brun moyen' },
+    { name: '--brown-btn', hex: '#231508', label: 'Bouton normal' },
+    { name: '--brown-btn-hover', hex: '#3a2210', label: 'Bouton hover' },
+  ],
+  main: [
+    { name: '--gold', hex: '#010101', label: 'Or (texte)' },
+    { name: '--gold-light', hex: '#e8c97a', label: 'Or clair' },
+    { name: '--gold-dim', hex: '#7a6030', label: 'Or atténué' },
+  ],
+  texts: [
+    { name: '--text-dim', hex: '#8a7040', label: 'Texte dim' },
+  ],
+  states: [
+    { name: '--error', hex: '#a03020', label: 'Erreur' },
+  ],
+};
+
+function showToast(hex) {
+  navigator.clipboard?.writeText(hex);
+  const t = document.getElementById('toast');
+  t.textContent = `${hex} copié !`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+function makeSwatch(c) {
+  const el = document.createElement('div');
+  el.className = 'swatch';
+  el.title = `Cliquer pour copier ${c.hex}`;
+  el.innerHTML = `<div class="swatch-color" style="background:${c.hex}"></div><div class="swatch-name">${c.name}</div><div class="swatch-hex">${c.hex}</div>`;
+  el.querySelector('.swatch-color').onclick = () => showToast(c.hex);
+  return el;
+}
+
+function makeBgRow(c) {
+  const el = document.createElement('div');
+  el.className = 'bg-row';
+  el.style.background = c.hex;
+  el.title = `Cliquer pour copier ${c.hex}`;
+  el.innerHTML = `<span class="bg-label">${c.name} — ${c.label}</span><span class="bg-hex">${c.hex}</span>`;
+  el.onclick = () => showToast(c.hex);
+  return el;
+}
+
+colors.bgs.forEach(c => document.getElementById('bgs').appendChild(makeBgRow(c)));
+colors.main.forEach(c => document.getElementById('main').appendChild(makeSwatch(c)));
+colors.texts.forEach(c => document.getElementById('texts').appendChild(makeSwatch(c)));
+colors.states.forEach(c => document.getElementById('states').appendChild(makeSwatch(c)));
+</script>
