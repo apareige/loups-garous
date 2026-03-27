@@ -14,3 +14,7 @@ loup-garou/
     ├── 
     └── 
 ```
+## Pallet de couleur
+- Noir
+- OR
+- couleur basse maron ( HEX = 
