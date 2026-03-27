@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loup-Garou – Partie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="room-page">
+
+  <div class="bg-overlay" id="bgOverlay"></div>
+  <div class="moon" id="moon"></div>
+  <div class="stars" id="stars"></div>
+
+  <!-- ── Lobby ── -->
+  <div id="lobby" class="screen active">
+    <div class="lobby-wrap">
+      <h2 class="screen-title">Salle d'attente</h2>
+      <div class="room-code-box">
+        Code de la room : <strong id="lobbyRoomCode">----</strong>
+      </div>
+      <ul id="lobbyPlayers" class="player-list"></ul>
+      <button id="startBtn" class="btn btn-primary" onclick="startGame()" style="display:none">
+        🐺 Lancer la partie
+      </button>
+      <p id="waitingMsg" class="italic-hint">En attente du maître du jeu...</p>
+    </div>
+  </div>
+
+  <!-- ── Révélation rôle ── -->
+  <div id="roleReveal" class="screen">
+    <div class="role-reveal-wrap">
+      <p class="reveal-label">Ton rôle cette nuit...</p>
+      <div class="role-icon-big" id="roleIconBig"></div>
+      <h2 class="role-name" id="roleName"></h2>
+      <p class="role-desc" id="roleDesc"></p>
+      <div id="wolfTeamBox" class="wolf-team-box" style="display:none">
+        <p>🐺 Tes complices :</p>
+        <ul id="wolfTeamList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Jeu principal ── -->
+  <div id="game" class="screen">
+
+    <header class="game-header">
+      <div class="header-left">
+        <span class="phase-badge" id="phaseBadge">—</span>
+        <span class="timer-badge" id="timerBadge">—</span>
+      </div>
+      <div class="header-center">
+        <span class="my-role-tag" id="myRoleTag"></span>
+      </div>
+      <div class="header-right">
+        <span class="room-tag">Room : <strong id="headerRoom">—</strong></span>
+      </div>
+    </header>
+
+    <div class="game-body">
+
+      <!-- Joueurs -->
+      <aside class="players-panel">
+        <h3 class="panel-title">Joueurs</h3>
+        <ul id="gamePlayers" class="game-player-list"></ul>
+      </aside>
+
+      <!-- Zone centrale -->
+      <div class="center-panel">
+
+        <!-- Actions nuit -->
+        <div id="nightActions" class="action-box" style="display:none">
+          <h3 class="action-title" id="nightActionTitle">🌙 Nuit...</h3>
+          <div id="nightActionContent"></div>
+        </div>
+
+        <!-- Vote du jour -->
+        <div id="dayVote" class="action-box" style="display:none">
+          <h3 class="action-title">☀️ Vote du village</h3>
+          <p class="action-hint">Qui est le loup parmi vous ?</p>
+          <ul id="voteList" class="vote-list"></ul>
+        </div>
+
+        <!-- Annonces -->
+        <div id="announcements" class="announcements"></div>
+
+      </div>
+
+      <!-- Chat -->
+      <aside class="chat-panel">
+        <h3 class="panel-title">Chat <span id="chatLabel" class="chat-label"></span></h3>
+        <div id="messages" class="messages"></div>
+        <div class="chat-input-row">
+          <input id="chatInput" placeholder="Message..." maxlength="200" autocomplete="off">
+          <button onclick="sendChat()">➤</button>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- ── Mort ── -->
+  <div id="deadOverlay" class="dead-overlay" style="display:none">
+    <div class="dead-content">
+      <div class="dead-icon">💀</div>
+      <h2>Vous êtes mort</h2>
+      <p id="deadReason"></p>
+      <p class="dead-hint">Vous pouvez encore observer et chatter avec les autres morts.</p>
+      <button class="btn btn-ghost" onclick="document.getElementById('deadOverlay').style.display='none'">Continuer à observer</button>
+    </div>
+  </div>
+
+  <!-- ── Game Over ── -->
+  <div id="gameOverOverlay" class="game-over-overlay" style="display:none">
+    <div class="game-over-content">
+      <div class="game-over-icon" id="gameOverIcon"></div>
+      <h2 id="gameOverTitle"></h2>
+      <p id="gameOverMsg"></p>
+      <button class="btn btn-primary" onclick="window.location='/'">Rejouer</button>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/socket.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/chat.js"></script>
+
+  <script>
+    const starsContainer = document.getElementById("stars");
+    for (let i = 0; i < 120; i++) {
+      const star = document.createElement("div");
+      star.className = "star";
+      star.style.left = Math.random() * 100 + "%";
+      star.style.top = Math.random() * 100 + "%";
+      star.style.animationDelay = Math.random() * 3 + "s";
+      star.style.width = star.style.height = (Math.random() * 2.5 + 0.5) + "px";
+      starsContainer.appendChild(star);
+    }
+  </script>
+
+</body>
+</html>
