@@ -1,0 +1,1 @@
+alert("Gardez votre role secret")
