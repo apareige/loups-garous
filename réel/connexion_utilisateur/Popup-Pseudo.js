@@ -1,0 +1,1 @@
+alert("Les peusdo insultant seront valables d'un bannissement de la partie")
