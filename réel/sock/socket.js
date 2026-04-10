@@ -1,4 +1,4 @@
-const socket = io("http://192.168.1.21:3000");
+const socket = io("http://172.17.30.72:3000");
         let pseudo = "";
 
         function joinGame() {
