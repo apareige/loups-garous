@@ -82,7 +82,7 @@ function validate() {
   if (pin === CORRECT_CODE) {
     setStatus('Code Accepté', 'success');
     setTimeout(() => {
-      window.location.href = '../acceuil_admin/admin.php';
+      window.location.href = '../acceuil_admin/admin.html';
     }, 600);
   } else {
     setStatus('Code Incorrect', 'fail');
