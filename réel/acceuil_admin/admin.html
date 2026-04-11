@@ -1,10 +1,16 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<body>
+    
+
 <div class="gm-container">
     <header class="gm-header">
         <div class="gm-title-group">
             <p class="gm-label">GRIMOIRE DU</p>
             <h1 class="gm-main-title">MAITRE DU JEU</h1>
         </div>
-        <button class="btn-quit">QUITTER</button>
+        <button type="button" class="btn-quit">QUITTER</button>
     </header>
 
     <section class="gm-card room-code-card">
@@ -15,8 +21,9 @@
         
          <h1>Génére le code de la partie</h1>
           <div id="code">----</div>
-          <button onclick="generer()">Générer</button>
+          <button type="button" onclick="generer()">Générer</button>
     </section>
+
 
     <section class="gm-card status-card">
         <div class="status-header">
@@ -27,8 +34,15 @@
             <span class="dot"></span>
             <span class="status-text">En attente des joueurs</span>
         </div>
+        <h2>Joueurs connectés :</h2>
+    <ul id="players"></ul>
         
-        <button class="btn btn-primary btn-large" id="startGame">LANCER LA PARTIE</button>
+        <button type="button" class="btn btn-primary btn-large" id="startGame">LANCER LA PARTIE</button>
     </section>
+    
 </div>
-<script src= "assets/js/script.js"></script>
+<script src="assets/js/script.js"></script>
+    <script src="http://192.168.1.21:3000/socket.io/socket.io.js"></script>
+    <script src="../sock/socket.js"></script>
+</body>
+</html>
