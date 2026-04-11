@@ -35,7 +35,7 @@ io.on("connection", (socket) => {
 });
 
 http.listen(3000, () => {
-    console.log("Serveur Socket.io lancé sur http://172.17.30.72:3000");
+    console.log("Serveur Socket.io lancé sur http://192.168.1.21:3000");
 });
 
 

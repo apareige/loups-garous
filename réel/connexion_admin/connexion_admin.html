@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maître du Jeu – Accès Restreint</title>
+  <title>Maître du Jeu  Accès Restreint</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -25,28 +25,28 @@
     <div class="status-msg" id="statusMsg"></div>
 
     <div class="keypad" id="keypad">
-      <button class="key" data-val="1">1</button>
-      <button class="key" data-val="2">2</button>
-      <button class="key" data-val="3">3</button>
-      <button class="key" data-val="4">4</button>
-      <button class="key" data-val="5">5</button>
-      <button class="key" data-val="6">6</button>
-      <button class="key" data-val="7">7</button>
-      <button class="key" data-val="8">8</button>
-      <button class="key" data-val="9">9</button>
+      <button type="button" class="key" data-val="1">1</button>
+      <button type="button" class="key" data-val="2">2</button>
+      <button type="button" class="key" data-val="3">3</button>
+      <button type="button" class="key" data-val="4">4</button>
+      <button type="button" class="key" data-val="5">5</button>
+      <button type="button" class="key" data-val="6">6</button>
+      <button type="button" class="key" data-val="7">7</button>
+      <button type="button" class="key" data-val="8">8</button>
+      <button type="button" class="key" data-val="9">9</button>
     </div>
 
     <div class="keypad-last">
       <div class="key-spacer"></div>
-      <button class="key" data-val="0">0</button>
-      <button class="key key-suppr" id="btnSuppr">Suppr</button>
+      <button type="button" class="key" data-val="0">0</button>
+      <button  type="button" class="key key-suppr" id="btnSuppr">Suppr</button>
     </div>
 
     <a class="back-link" id="backLink">Retourner à l'accueil</a>
   </div>
 
   <script src="script.js"></script>
-  <script src="sock/socket.js"></script>
-    <script src="http://192.168.1.103:3000/socket.io/socket.io.js"></script>
+  <script src="http://192.168.1.21:3000/socket.io/socket.io.js"></script>
+    <script src="sock/socket.js"></script>
 </body>
 </html>
