@@ -1,0 +1,408 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --night: #0a0c12;
+  --deep: #10131e;
+  --card: #151822;
+  --border: #2a2f45;
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --blood: #8b1a1a;
+  --blood-light: #c0392b;
+  --silver: #8899bb;
+  --text: #d4cfc4;
+  --muted: #6a7080;
+  --wolf: #6b3fa0;
+  --wolf-light: #9b6fd4;
+}
+
+body {
+  background: var(--night);
+  color: var(--text);
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 18px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Étoiles en arrière-plan */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 42% 8%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 70% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 88% 30%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 55%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 5% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 95% 65%, rgba(255,255,255,0.4) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* En-tête */
+header {
+  text-align: center;
+  padding: 2.5rem 0 2rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.village-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+
+h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1.1;
+  text-shadow: 0 0 40px rgba(201,168,76,0.3);
+}
+
+.subtitle {
+  margin-top: 0.8rem;
+  color: var(--muted);
+  font-style: italic;
+  font-size: 1rem;
+}
+
+/* Phase banner */
+#phase-banner {
+  background: var(--deep);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.phase-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex-shrink: 0;
+  transition: background 0.5s, box-shadow 0.5s;
+}
+
+.phase-dot.nuit { background: var(--silver); box-shadow: 0 0 8px var(--silver); }
+.phase-dot.jour { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+
+#phase-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: var(--silver);
+  letter-spacing: 0.1em;
+}
+
+/* Carte de connexion */
+#zone-connexion {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+#zone-connexion h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  margin-bottom: 1.4rem;
+}
+
+.field { margin-bottom: 1rem; }
+
+label {
+  display: block;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+input[type="text"] {
+  width: 100%;
+  background: var(--deep);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  font-family: 'Crimson Text', serif;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input[type="text"]:focus { border-color: var(--gold); }
+input[type="text"]::placeholder { color: var(--muted); }
+
+.btn {
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.btn:active { transform: scale(0.98); }
+.btn:hover { opacity: 0.85; }
+
+.btn-gold {
+  background: var(--gold);
+  color: var(--night);
+  font-weight: 700;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.btn-blood {
+  background: var(--blood);
+  color: #f0d4d4;
+  font-weight: 600;
+}
+
+/* Carte rôle */
+#zone-jeu { display: none; }
+
+#carte-role {
+  border-radius: 12px;
+  padding: 1.8rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: background 0.6s, border-color 0.6s;
+}
+
+#carte-role.villageois {
+  background: linear-gradient(135deg, #1a1f2e 0%, #12161f 100%);
+  border-color: var(--gold);
+}
+
+#carte-role.loup {
+  background: linear-gradient(135deg, #1a0f2e 0%, #120a1f 100%);
+  border-color: var(--wolf);
+}
+
+#carte-role::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  opacity: 0.08;
+}
+
+#carte-role.villageois::before { background: var(--gold); }
+#carte-role.loup::before { background: var(--wolf-light); }
+
+.role-header {
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+#role-nom {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.villageois #role-nom { color: var(--gold-light); }
+.loup #role-nom { color: var(--wolf-light); }
+
+#role-desc {
+  margin-top: 0.6rem;
+  font-style: italic;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.secret-badge {
+  display: inline-block;
+  margin-top: 0.8rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.06);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+/* Liste des joueurs */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+#players {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#players li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  background: var(--deep);
+  font-size: 1rem;
+  transition: opacity 0.3s;
+}
+
+#players li.mort { opacity: 0.4; text-decoration: line-through; }
+#players li.deconnecte { opacity: 0.5; }
+
+.joueur-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.joueur-dot.vivant { background: #4caf80; }
+.joueur-dot.mort { background: var(--blood-light); }
+.joueur-dot.off { background: var(--muted); }
+
+/* Zone vote */
+#zone-vote {
+  display: none;
+}
+
+select {
+  width: 100%;
+  background: var(--deep);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  font-family: 'Crimson Text', serif;
+  font-size: 1rem;
+  outline: none;
+  margin-bottom: 0.8rem;
+  cursor: pointer;
+}
+
+select:focus { border-color: var(--blood-light); }
+
+/* Journal */
+#results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+#results p {
+  padding: 0.5rem 0.8rem;
+  border-radius: 5px;
+  background: var(--deep);
+  border-left: 2px solid var(--border);
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+#results p.elimination {
+  border-left-color: var(--blood-light);
+  color: #e08080;
+}
+
+#results p.vote {
+  border-left-color: var(--gold);
+}
+
+.attente-msg {
+  text-align: center;
+  padding: 2rem 0;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.attente-msg .dots::after {
+  content: '';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%  { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
+
+/* Notification éjection */
+#notif {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+
+#notif.visible { display: flex; }
+
+.notif-box {
+  background: var(--card);
+  border: 1px solid var(--blood);
+  border-radius: 12px;
+  padding: 2.5rem;
+  text-align: center;
+  max-width: 320px;
+}
+
+.notif-box h2 {
+  font-family: 'Cinzel', serif;
+  color: var(--blood-light);
+  margin-bottom: 0.8rem;
+}
+
+.notif-box p { color: var(--muted); margin-bottom: 1.5rem; }
