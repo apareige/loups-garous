@@ -5,7 +5,320 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin — Maître du Jeu</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --night: #0a0c12;
+      --deep: #10131e;
+      --card: #151822;
+      --border: #2a2f45;
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --blood: #8b1a1a;
+      --blood-light: #c0392b;
+      --silver: #8899bb;
+      --text: #d4cfc4;
+      --muted: #6a7080;
+      --green: #4caf80;
+      --wolf: #6b3fa0;
+    }
+
+    body {
+      background: var(--night);
+      color: var(--text);
+      font-family: 'Crimson Text', Georgia, serif;
+      font-size: 16px;
+      min-height: 100vh;
+    }
+
+    /* ── LOGIN ── */
+    #zone-login {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 3rem 2.5rem;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    .login-box h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+      margin-bottom: 0.3rem;
+    }
+
+    .login-box p {
+      color: var(--muted);
+      font-style: italic;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      background: var(--deep);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      font-family: 'Crimson Text', serif;
+      font-size: 1rem;
+      outline: none;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    input:focus { border-color: var(--gold); }
+    input::placeholder { color: var(--muted); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.7rem 1.4rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      transition: opacity 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn:active { transform: scale(0.97); }
+    .btn:hover { opacity: 0.82; }
+    .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .btn-gold  { background: var(--gold); color: var(--night); font-weight: 700; width: 100%; }
+    .btn-night { background: var(--deep); color: var(--silver); border: 1px solid var(--border); }
+    .btn-day   { background: #2a2410; color: var(--gold-light); border: 1px solid #4a3a18; }
+    .btn-blood { background: var(--blood); color: #f0d0d0; }
+    .btn-green { background: #0f2e1e; color: var(--green); border: 1px solid #1a4a30; }
+    .btn-wolf  { background: #1a0f2e; color: #b08adc; border: 1px solid #3a2060; }
+    .btn-muted { background: transparent; color: var(--muted); border: 1px solid var(--border); font-size: 0.72rem; padding: 0.45rem 0.9rem; }
+
+    #login-error {
+      color: var(--blood-light);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    /* ── DASHBOARD ── */
+    #zone-dashboard { display: none; }
+
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .topbar h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      color: var(--gold);
+      letter-spacing: 0.15em;
+    }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+    }
+
+    .rooms-count {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Nouvelle room */
+    .new-room-bar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .new-room-bar label {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    #new-room-code {
+      flex: 1;
+      min-width: 120px;
+      margin-bottom: 0;
+    }
+
+    /* Grille de rooms */
+    #rooms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .room-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+
+    .room-card.active { border-color: var(--gold); }
+    .room-card.nuit   { border-color: var(--silver); }
+
+    .room-header {
+      padding: 1rem 1.2rem 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .room-code {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      color: var(--gold);
+      letter-spacing: 0.15em;
+    }
+
+    .room-phase {
+      font-size: 0.72rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 20px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .room-phase.attente { background: var(--deep); color: var(--muted); border: 1px solid var(--border); }
+    .room-phase.nuit    { background: #101828; color: var(--silver); border: 1px solid #304060; }
+    .room-phase.jour    { background: #2a2410; color: var(--gold-light); border: 1px solid #4a3a18; }
+
+    /* Liste joueurs dans la room */
+    .room-players {
+      padding: 0.8rem 1.2rem;
+      min-height: 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .joueur-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.4rem 0.6rem;
+      border-radius: 5px;
+      background: var(--deep);
+    }
+
+    .joueur-row-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .j-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .j-dot.on  { background: var(--green); }
+    .j-dot.off { background: var(--muted); }
+    .j-dot.mort { background: var(--blood-light); }
+
+    .j-role {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 10px;
+      letter-spacing: 0.08em;
+    }
+
+    .j-role.loup       { background: #2a1040; color: #b08adc; }
+    .j-role.villageois { background: #1a1a10; color: #a09050; }
+    .j-role.none       { background: var(--deep); color: var(--muted); }
+
+    .j-mort { text-decoration: line-through; opacity: 0.5; }
+
+    /* Actions de la room */
+    .room-actions {
+      padding: 0.8rem 1.2rem 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .empty-rooms {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.8rem 1.2rem;
+      font-size: 0.9rem;
+      color: var(--text);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: transform 0.3s, opacity 0.3s;
+      z-index: 50;
+    }
+
+    #toast.show { transform: translateY(0); opacity: 1; }
+  </style>
 </head>
 <body>
 
@@ -52,6 +365,149 @@
 <div id="toast"></div>
 
 <script src="http://192.168.1.21:3000/socket.io/socket.io.js"></script>
-<script src="assets/js/script.js"></script>
+<script>
+const socket = io("http://192.168.1.21:3000");
+let motDePasse = "";
+
+function adminLogin() {
+  motDePasse = document.getElementById("admin-pwd").value;
+  socket.emit("admin_auth", motDePasse);
+}
+
+socket.on("admin_ok", () => {
+  document.getElementById("zone-login").style.display = "none";
+  document.getElementById("zone-dashboard").style.display = "block";
+  toast("Connecté en tant que maître du jeu");
+});
+
+socket.on("admin_refuse", () => {
+  document.getElementById("login-error").style.display = "block";
+});
+
+// ── ÉTAT DES ROOMS ──────────────────────────────────────────
+
+socket.on("etat_rooms", (rooms) => {
+  const grid = document.getElementById("rooms-grid");
+  const count = document.getElementById("rooms-count");
+  count.textContent = rooms.length + " room" + (rooms.length > 1 ? "s" : "") + " active" + (rooms.length > 1 ? "s" : "");
+
+  if (rooms.length === 0) {
+    grid.innerHTML = '<div class="empty-rooms">Aucune room active pour l\'instant.</div>';
+    return;
+  }
+
+  grid.innerHTML = "";
+  rooms.forEach(room => {
+    grid.appendChild(construireCarteRoom(room));
+  });
+});
+
+function construireCarteRoom(room) {
+  const card = document.createElement("div");
+  card.className = "room-card " + (room.phase !== "attente" ? room.phase : "");
+  card.id = "room-" + room.code;
+
+  // Header
+  const header = document.createElement("div");
+  header.className = "room-header";
+  header.innerHTML = `
+    <span class="room-code">${room.code}</span>
+    <span class="room-phase ${room.phase}">${room.phase}</span>
+  `;
+
+  // Joueurs
+  const playersDiv = document.createElement("div");
+  playersDiv.className = "room-players";
+
+  if (room.joueurs.length === 0) {
+    playersDiv.innerHTML = '<span style="color:var(--muted);font-style:italic;font-size:0.9rem">Aucun joueur</span>';
+  } else {
+    room.joueurs.forEach(j => {
+      const row = document.createElement("div");
+      row.className = "joueur-row";
+
+      const dotClass = !j.vivant ? "mort" : j.connecte ? "on" : "off";
+      const roleClass = j.role || "none";
+      const roleLabel = j.role || "—";
+      const mortClass = j.vivant ? "" : "j-mort";
+
+      row.innerHTML = `
+        <div class="joueur-row-left">
+          <span class="j-dot ${dotClass}"></span>
+          <span class="${mortClass}">${j.nom}</span>
+          <span class="j-role ${roleClass}">${roleLabel}</span>
+        </div>
+        <button class="btn btn-muted" onclick="ejecter('${room.code}', '${j.nom}')">Éjecter</button>
+      `;
+      playersDiv.appendChild(row);
+    });
+  }
+
+  // Actions
+  const actions = document.createElement("div");
+  actions.className = "room-actions";
+  actions.innerHTML = `
+    <button class="btn btn-green" onclick="lancerPartie('${room.code}')" ${room.phase !== 'attente' ? 'disabled' : ''}>
+      Lancer la partie
+    </button>
+    <button class="btn btn-night" onclick="changerPhase('${room.code}', 'nuit')">
+      Nuit
+    </button>
+    <button class="btn btn-day" onclick="changerPhase('${room.code}', 'jour')">
+      Jour
+    </button>
+    <button class="btn btn-blood" onclick="supprimerRoom('${room.code}')">
+      Fermer
+    </button>
+  `;
+
+  card.appendChild(header);
+  card.appendChild(playersDiv);
+  card.appendChild(actions);
+  return card;
+}
+
+// ── ACTIONS ─────────────────────────────────────────────────
+
+function creerRoom() {
+  const code = document.getElementById("new-room-code").value.trim().toUpperCase();
+  if (!code) return toast("Saisis un code de room");
+  socket.emit("admin_creer_room", { codePartie: code });
+  document.getElementById("new-room-code").value = "";
+  toast("Room " + code + " créée");
+}
+
+function lancerPartie(code) {
+  if (!confirm("Lancer la partie pour la room " + code + " ?")) return;
+  socket.emit("admin_lancer_partie", { codePartie: code });
+  toast("Partie lancée — " + code);
+}
+
+function changerPhase(code, phase) {
+  socket.emit("admin_phase", { codePartie: code, phase });
+  toast("Room " + code + " — " + phase);
+}
+
+function ejecter(code, nom) {
+  if (!confirm("Éjecter " + nom + " de la room " + code + " ?")) return;
+  socket.emit("admin_ejecter", { codePartie: code, nom });
+  toast(nom + " éjecté");
+}
+
+function supprimerRoom(code) {
+  if (!confirm("Fermer définitivement la room " + code + " ?")) return;
+  socket.emit("admin_supprimer_room", { codePartie: code });
+  toast("Room " + code + " fermée");
+}
+
+// ── TOAST ────────────────────────────────────────────────────
+
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 2500);
+}
+</script>
 </body>
 </html>
