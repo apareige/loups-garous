@@ -488,6 +488,7 @@
 
   </div>
 </div>
+<div id="toast"></div>
 
 <script src="http://192.168.1.21:3000/socket.io/socket.io.js"></script>
 <script>
@@ -610,6 +611,13 @@ function ajouterJournal(texte, classe) {
   p.textContent = texte;
   div.appendChild(p);
   div.scrollTop = div.scrollHeight;
+}
+
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 2500);
 }
 </script>
 </body>

@@ -113,7 +113,7 @@ io.on("connection", (socket) => {
     socket.on("join", ({ pseudo, codePartie }) => {
         // Crée la room si elle n'existe pas
         if (!parties[codePartie]) {
-            parties[codePartie] = { joueurs: [], phase: "attente", votes: {} };
+            return socket.emit("error", "Cette room n'existe pas.");
         }
         const partie = parties[codePartie];
 
