@@ -1,5 +1,21 @@
 const socket = io("http://192.168.1.21:3000");
 
+
+const secret = sessionStorage.getItem("admin_secret");
+
+if (!secret) {
+  window.location.href = '../pin/pin.html'; // adapte le chemin
+} else {
+  socket.on("connect", () => {
+    socket.emit("admin_auth", secret);
+  });
+
+  socket.on("admin_ok",     () => toast("Connecté en tant que maître du jeu"));
+  socket.on("admin_refuse", () => {
+    sessionStorage.removeItem("admin_secret");
+    window.location.href = '../pin/pin.html';
+  });
+}
 // ── ÉTAT DES ROOMS ──────────────────────────────────────────
 
 socket.on("etat_rooms", (rooms) => {
@@ -124,3 +140,5 @@ function toast(msg) {
   el.classList.add("show");
   setTimeout(() => el.classList.remove("show"), 2500);
 }
+
+
