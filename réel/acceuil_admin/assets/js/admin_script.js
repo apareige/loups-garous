@@ -63,14 +63,27 @@ function construireCarteRoom(room) {
       const roleLabel = j.role || "—";
       const mortClass = j.vivant ? "" : "j-mort";
 
-      row.innerHTML = `
-        <div class="joueur-row-left">
-          <span class="j-dot ${dotClass}"></span>
-          <span class="${mortClass}">${j.nom}</span>
-          <span class="j-role ${roleClass}">${roleLabel}</span>
-        </div>
-        <button class="btn btn-muted" onclick="ejecter('${room.code}', '${j.nom}')">Éjecter</button>
-      `;
+      const ROLES = ["Loup-Garou", "Villageois", "Voyante", "Sorciere", "Cupidon", "Petite-Fille"];
+
+    // Dans la boucle joueurs, enrichis chaque row :
+    row.innerHTML = `
+      <div class="joueur-row-left">
+        <span class="j-dot ${dotClass}"></span>
+        <span class="${mortClass}">${j.nom}</span>
+        <span class="j-role ${roleClass}">${roleLabel}</span>
+      </div>
+      <div class="joueur-actions">
+        ${j.vivant
+          ? `<button class="btn btn-blood btn-sm" onclick="tuerJoueur('${room.code}', '${j.id}')">💀 Tuer</button>`
+          : `<button class="btn btn-green btn-sm"  onclick="ressusciter('${room.code}', '${j.id}')">❤️ Ressusciter</button>`
+        }
+        <select class="role-select" onchange="changerRole('${room.code}', '${j.id}', this.value)">
+          <option value="">Rôle…</option>
+          ${ROLES.map(r => `<option value="${r}" ${j.role === r ? 'selected' : ''}>${r}</option>`).join('')}
+        </select>
+        <button class="btn btn-muted btn-sm" onclick="ejecter('${room.code}', '${j.nom}')">Éjecter</button>
+      </div>
+    `;
       playersDiv.appendChild(row);
     });
   }
@@ -79,19 +92,15 @@ function construireCarteRoom(room) {
   const actions = document.createElement("div");
   actions.className = "room-actions";
   actions.innerHTML = `
-    <button class="btn btn-green" onclick="lancerPartie('${room.code}')" ${room.phase !== 'attente' ? 'disabled' : ''}>
-      Lancer la partie
-    </button>
-    <button class="btn btn-night" onclick="changerPhase('${room.code}', 'nuit')">
-      Nuit
-    </button>
-    <button class="btn btn-day" onclick="changerPhase('${room.code}', 'jour')">
-      Jour
-    </button>
-    <button class="btn btn-blood" onclick="supprimerRoom('${room.code}')">
-      Fermer
-    </button>
-  `;
+  <button class="btn btn-green"  onclick="lancerPartie('${room.code}')" ${room.phase !== 'waiting' ? 'disabled' : ''}>
+    ▶ Lancer
+  </button>
+  <button class="btn btn-night"  onclick="changerPhase('${room.code}', 'nuit')">🌙 Nuit</button>
+  <button class="btn btn-day"    onclick="changerPhase('${room.code}', 'jour')">☀️ Jour</button>
+  <button class="btn btn-orange" onclick="resoudrePhase('${room.code}', '${room.phase}')">⏩ Résoudre</button>
+  <button class="btn btn-purple" onclick="skipSorciere('${room.code}')">🧙 Skip sorcière</button>
+  <button class="btn btn-blood"  onclick="supprimerRoom('${room.code}')">✕ Fermer</button>
+`;
 
   card.appendChild(header);
   card.appendChild(playersDiv);
@@ -130,6 +139,38 @@ function supprimerRoom(code) {
   if (!confirm("Fermer définitivement la room " + code + " ?")) return;
   socket.emit("admin_supprimer_room", { codePartie: code });
   toast("Room " + code + " fermée");
+}
+
+function tuerJoueur(code, joueurId) {
+  if (!confirm("Tuer ce joueur ?")) return;
+  socket.emit("admin_tuer", { codePartie: code, joueurId, cause: "admin" });
+  toast("Joueur éliminé");
+}
+
+function ressusciter(code, joueurId) {
+  socket.emit("admin_ressusciter", { codePartie: code, joueurId });
+  toast("Joueur ressuscité");
+}
+
+function changerRole(code, joueurId, role) {
+  if (!role) return;
+  socket.emit("admin_changer_role", { codePartie: code, joueurId, role });
+  toast("Rôle changé → " + role);
+}
+
+function resoudrePhase(code, phase) {
+  if (phase === "night" || phase === "nuit") {
+    socket.emit("admin_resoudre_nuit", { codePartie: code });
+    toast("Nuit résolue");
+  } else if (phase === "day" || phase === "jour") {
+    socket.emit("admin_resoudre_vote", { codePartie: code });
+    toast("Vote résolu");
+  }
+}
+
+function skipSorciere(code) {
+  socket.emit("admin_skip_sorciere", { codePartie: code });
+  toast("Tour sorcière passé");
 }
 
 // ── TOAST ────────────────────────────────────────────────────
