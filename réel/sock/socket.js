@@ -63,7 +63,7 @@ socket.on("players-update", (liste) => { // ← corrigé
 // ─── RÔLE ────────────────────────────────────────────────────
 
 socket.on("your-role", ({ role }) => { // ← corrigé
-    const roleEl = document.getElementById("role");
+    const roleEl = document.getElementById("role-nom");
     if (roleEl) roleEl.textContent = "Ton rôle : " + role;
 
     const descEl = document.getElementById("role-desc");
