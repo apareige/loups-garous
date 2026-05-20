@@ -1,33 +1,80 @@
 <!DOCTYPE html>
 <html lang="fr">
-    <head>
-        <meta charset="UTF-8">
-        <title>Loups-Garou</title>
-    </head>
-    <body>
-        <div class="game-container">
-            <header class="header">
-                <div class="ornament">✦ ✦ ✦</div>
-                <p class="sub-title">LE JEU DES</p>
-                <h1 class="main-title">LOUPS-GAROUS</h1>
-                <p class="location">de Thiercelieux</p>
-                <div class="ornament">✦ ✦ ✦</div>
-            </header>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loups-Garous de Lannion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
 
-            
+</head>
+<body>
 
-            <nav class="menu-actions">
-                <a href="acceuil_utilisateur/front_end/acceuil_utilisateur.html" >REJOINDRE UNE PARTIE</a>
-                <a href="connexion_admin/connexion_admin.html" >MAITRE DU JEU</a>
-            </nav>
+<!-- Décor : lune -->
+<div class="moon"></div>
 
-            <footer class="footer">
-                <p>Obtenez le code pour rejoindre auprès du maître du jeu</p>
-            </footer>
-        </div>
-        
-        <script src="assets/js/PageAcceuil.js"></script>
-        
+<!-- Décor : forêt silhouette -->
+<svg class="forest" viewBox="0 0 1440 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax slice">
+  <!-- Arbres lointains -->
+  <g opacity="0.3" fill="#0d0a06">
+    <polygon points="200,160 240,60 280,160"/>
+    <polygon points="350,160 390,80 430,160"/>
+    <polygon points="490,160 530,50 570,160"/>
+    <polygon points="800,160 840,70 880,160"/>
+    <polygon points="950,160 990,85 1030,160"/>
+    <polygon points="1100,160 1140,55 1180,160"/>
+    <polygon points="1280,160 1320,75 1360,160"/>
+  </g>
+  <!-- Arbres proches -->
+  <g opacity="0.7" fill="#100c05">
+    <polygon points="0,160 55,30 110,160"/>
+    <polygon points="80,160 130,55 180,160"/>
+    <polygon points="270,160 330,20 390,160"/>
+    <polygon points="620,160 680,35 740,160"/>
+    <polygon points="700,160 755,60 810,160"/>
+    <polygon points="1050,160 1110,25 1170,160"/>
+    <polygon points="1130,160 1185,50 1240,160"/>
+    <polygon points="1360,160 1400,40 1440,160"/>
+  </g>
+</svg>
 
-    </body>
+<!-- Décor : étoiles -->
+<div class="stars" id="stars"></div>
+
+<!-- Grain overlay -->
+<div class="grain"></div>
+
+<div class="game-container">
+  <header class="header">
+    <div class="ornament">✦ ✦ ✦</div>
+    <p class="sub-title">Le jeu des</p>
+    <h1 class="main-title">Loups-Garous</h1>
+    <p class="location">de Lannion</p>
+    <div class="sep"><span class="sep-icon">◆</span></div>
+  </header>
+
+  <nav class="menu-actions">
+    <a href="acceuil_utilisateur/front_end/acceuil_utilisateur.html">Rejoindre une partie</a>
+    <a href="connexion_admin/connexion_admin.html">Maître du jeu</a>
+  </nav>
+
+  <footer class="footer">
+    <p>Obtiens le code de room auprès du maître du jeu</p>
+  </footer>
+</div>
+
+<script>
+  // Génère les étoiles
+  const starsContainer = document.getElementById("stars");
+  for (let i = 0; i < 60; i++) {
+    const star = document.createElement("div");
+    star.className = "star";
+    star.style.setProperty("--d",     (2 + Math.random() * 4) + "s");
+    star.style.setProperty("--delay", (Math.random() * 4)     + "s");
+    star.style.left = (Math.random() * 100) + "%";
+    star.style.top  = (Math.random() * 70)  + "%"; // Haut de l'écran seulement
+    starsContainer.appendChild(star);
+  }
+</script>
+</body>
 </html>

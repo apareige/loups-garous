@@ -6,9 +6,11 @@
   <title>Loup-Garou — Village de Lannion</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/style_role.css">
 </head>
 <body>
 
+<!-- Notification éjection -->
 <div id="notif">
   <div class="notif-box">
     <h2>Éjecté</h2>
@@ -24,29 +26,38 @@
     <p class="subtitle">Gardez votre rôle secret</p>
   </header>
 
+  <div id="toast"></div>
+
+  <!-- Bandeau de phase -->
   <div id="phase-banner">
     <div class="phase-dot" id="phase-dot"></div>
-    <span id="phase-label">écouter le maitre du jeu et regarder le bas de la page</span>
+    <span id="phase-label">Écoute le maître du jeu</span>
   </div>
-
-  <!-- Connexion -->
+  <!-- Journal -->
+  <div class="card">
+    <div class="card-title">Journal de la partie</div>
+    <div id="results">
+      <p>Les événements apparaîtront ici<span class="dots"></span></p>
+    </div>
+  </div>
+  <!-- ── CONNEXION ── -->
   <div id="zone-connexion">
     <h2>Rejoindre la partie</h2>
     <div class="field">
       <label for="pseudo">Votre nom</label>
-      <input type="text" id="pseudo" placeholder="Ex : Marie" />
+      <input type="text" id="pseudo" placeholder="Ex : Marie" autocomplete="off" />
     </div>
     <div class="field">
       <label for="codePartie">Code de la room</label>
-      <input type="text" id="codePartie" placeholder="Ex : ABC" maxlength="6" />
+      <input type="text" id="codePartie" placeholder="Ex : ABC" maxlength="6" autocomplete="off" />
     </div>
     <button type="button" class="btn btn-gold" onclick="joinGame()">Entrer dans le village</button>
   </div>
 
-  <!-- Zone de jeu -->
+  <!-- ── ZONE DE JEU ── -->
   <div id="zone-jeu">
 
-    <!-- Rôle -->
+    <!-- Carte rôle -->
     <div id="carte-role">
       <div class="role-header">Votre rôle</div>
       <div id="role-nom">—</div>
@@ -54,7 +65,85 @@
       <span class="secret-badge">Confidentiel</span>
     </div>
 
-    <!-- Joueurs -->
+    <!-- Amoureux (Cupidon) -->
+    <div id="zone-amoureux" class="card" style="display:none">
+      <div class="card-title">💘 Vous êtes amoureux</div>
+      <p id="amoureux-partner">Votre amour : <strong>—</strong></p>
+      <p class="card-hint">Si l'un de vous meurt, l'autre mourra de chagrin.</p>
+    </div>
+
+    <!-- ══ ACTIONS NUIT ══ -->
+
+    <!-- Loups : vote nuit -->
+    <div id="zone-loups" class="card action-card" style="display:none">
+      <div class="card-title">🐺 Vote des loups</div>
+      <p class="card-hint">Choisissez votre victime cette nuit.</p>
+      <div id="wolf-team-list" class="team-list"></div>
+      <select id="wolfTarget"></select>
+      <button type="button" class="btn btn-blood" onclick="sendWolfVote()">Désigner la victime</button>
+      <div id="wolf-vote-status" class="vote-status"></div>
+    </div>
+
+    <!-- Voyante : inspecter -->
+    <div id="zone-voyante" class="card action-card" style="display:none">
+      <div class="card-title">🔮 Voyante</div>
+      <p class="card-hint">Découvrez le rôle d'un joueur cette nuit.</p>
+      <select id="voyanteCible"></select>
+      <button type="button" class="btn btn-purple" onclick="voyanteCheck()">Révéler son rôle</button>
+      <div id="voyante-result-text" class="result-reveal" style="display:none"></div>
+    </div>
+
+    <!-- Sorcière : antidote / poison -->
+    <div id="zone-sorciere" class="card action-card" style="display:none">
+      <div class="card-title">🧪 Sorcière</div>
+      <div id="sorciere-victime" class="sorciere-info"></div>
+      <div class="sorciere-actions">
+        <button id="btn-antidote" type="button" class="btn btn-green" onclick="witchSave()" style="display:none">
+          💊 Sauver la victime
+        </button>
+        <button id="btn-passer" type="button" class="btn btn-muted" onclick="witchPass()">
+          Passer mon tour
+        </button>
+      </div>
+      <div id="zone-poison" style="display:none">
+        <hr class="divider">
+        <p class="card-hint">Empoisonner quelqu'un cette nuit ?</p>
+        <select id="poisonCible"></select>
+        <button id="btn-poison" type="button" class="btn btn-blood" onclick="witchPoison()">
+          ☠️ Empoisonner
+        </button>
+      </div>
+    </div>
+
+    <!-- Cupidon : lier les amoureux (1ère nuit seulement) -->
+    <div id="zone-cupidon" class="card action-card" style="display:none">
+      <div class="card-title">💘 Cupidon</div>
+      <p class="card-hint">Choisissez deux joueurs qui deviendront amoureux.</p>
+      <div class="cupidon-selects">
+        <select id="cupidon1"><option value="">— Joueur 1 —</option></select>
+        <select id="cupidon2"><option value="">— Joueur 2 —</option></select>
+      </div>
+      <button type="button" class="btn btn-gold" onclick="cupidonLink()">Lier les amoureux</button>
+    </div>
+
+    <!-- Petite-fille : message passif -->
+    <div id="zone-petite-fille" class="card action-card" style="display:none">
+      <div class="card-title">👁️ Petite-Fille</div>
+      <p class="card-hint">Tu peux espionner les loups discrètement cette nuit. Fais attention à ne pas te faire repérer !</p>
+    </div>
+
+    <!-- ══ VOTE DU JOUR ══ -->
+    <div id="zone-vote" class="card" style="display:none">
+      <div class="card-title">⚖️ Vote du village</div>
+      <p class="card-hint">Qui éliminez-vous aujourd'hui ?</p>
+      <select id="voteTarget"></select>
+      <button type="button" class="btn btn-blood" onclick="sendVote()" style="width:100%">
+        Voter pour l'élimination
+      </button>
+      <div id="vote-recap" class="vote-recap"></div>
+    </div>
+
+    <!-- Joueurs présents -->
     <div class="card">
       <div class="card-title">Villageois présents</div>
       <ul id="players">
@@ -62,156 +151,69 @@
       </ul>
     </div>
 
-    <!-- Vote -->
-    <div id="zone-vote" class="card">
-      <div class="card-title">Vote du village</div>
-      <select id="voteTarget"></select>
-      <button type="button" class="btn btn-blood" onclick="sendVote()" style="width:100%">Voter pour l'élimination</button>
-    </div>
+    
 
-    <!-- Journal -->
-    <div class="card">
-      <div class="card-title">Journal de la nuit</div>
-      <div id="results">
-        <p>Les événements de la partie apparaîtront ici<span class="dots"></span></p>
-      </div>
-    </div>
+  </div><!-- /zone-jeu -->
+</div><!-- /container -->
 
-  </div>
+
+
+
+
+<!-- Grain -->
+<div class="grain"></div>
+
+<!-- Bouton déclencheur -->
+<div class="trigger-wrap">
+  <button class="btn-roles" id="btn-open-roles" onclick="ouvrirRoles()">
+    <span class="btn-roles-icon">📖</span>
+    Voir les rôles
+  </button>
 </div>
-<div id="toast"></div>
 
-<script src="http://192.168.1.21:3000/socket.io/socket.io.js"></script>
-<script src="../../sock/socket.js" ></script>
+<!-- Panneau des rôles -->
+<div class="roles-overlay" id="roles-overlay">
 
-<script>
-const socket = io("http://192.168.1.21:3000");
-let pseudo = "";
-let codePartie = "";
+  <div class="roles-header">
+    <div class="ornament">✦ ✦ ✦</div>
+    <h2>Les Rôles</h2>
+    <p>Clique sur un rôle pour découvrir ses secrets</p>
+  </div>
 
-// Reconnexion automatique
-const pseudoSauve = localStorage.getItem("lgPseudo");
-const roomSauvee  = localStorage.getItem("lgRoom");
-if (pseudoSauve && roomSauvee) {
-  pseudo = pseudoSauve;
-  codePartie = roomSauvee;
-  document.getElementById("pseudo").value = pseudo;
-  document.getElementById("codePartie").value = codePartie;
-  socket.emit("join", { pseudo, codePartie });
-}
+  <!-- ═══ VILLAGE ═══ -->
+  <div class="camp-section camp-village">
+    <div class="camp-label"><span>⚔ Camp du Village</span></div>
+    <div class="roles-grid" id="grid-village"></div>
+    <div class="role-detail" id="detail-village"></div>
+  </div>
 
-function joinGame() {
-  pseudo = document.getElementById("pseudo").value.trim();
-  codePartie = document.getElementById("codePartie").value.trim().toUpperCase();
-  if (!pseudo || !codePartie) return alert("Remplis les deux champs !");
-  localStorage.setItem("lgPseudo", pseudo);
-  localStorage.setItem("lgRoom", codePartie);
-  socket.emit("join", { pseudo, codePartie });
-}
+  <div class="sep-roles"></div>
 
-socket.on("players", (liste) => {
-  document.getElementById("zone-connexion").style.display = "none";
-  document.getElementById("zone-jeu").style.display = "block";
+  <!-- ═══ LOUPS ═══ -->
+  <div class="camp-section camp-loups">
+    <div class="camp-label"><span>🐺 Camp des Loups</span></div>
+    <div class="roles-grid" id="grid-loups"></div>
+    <div class="role-detail" id="detail-loups"></div>
+  </div>
 
-  const ul = document.getElementById("players");
-  const select = document.getElementById("voteTarget");
-  ul.innerHTML = "";
-  select.innerHTML = "";
+  <div class="sep-roles"></div>
 
-  liste.forEach(j => {
-    const li = document.createElement("li");
-    if (!j.vivant) li.classList.add("mort");
-    else if (!j.connecte) li.classList.add("deconnecte");
+  <!-- ═══ SOLITAIRES ═══ -->
+  <div class="camp-section camp-solitaire">
+    <div class="camp-label"><span>🌒 Solitaires</span></div>
+    <div class="roles-grid" id="grid-solitaire"></div>
+    <div class="role-detail" id="detail-solitaire"></div>
+  </div>
 
-    const dot = document.createElement("span");
-    dot.className = "joueur-dot " + (!j.vivant ? "mort" : j.connecte ? "vivant" : "off");
+</div>
 
-    const nom = document.createElement("span");
-    nom.textContent = j.nom + (j.nom === pseudo ? " (vous)" : "");
+<!-- Bouton fermer (hors overlay pour rester visible) -->
+<button class="btn-close-roles" id="btn-close-roles" onclick="fermerRoles()">✕ Fermer</button>
 
-    li.appendChild(dot);
-    li.appendChild(nom);
-    ul.appendChild(li);
-
-    if (j.nom !== pseudo && j.vivant) {
-      const opt = document.createElement("option");
-      opt.value = j.nom;
-      opt.textContent = j.nom;
-      select.appendChild(opt);
-    }
-  });
-});
-
-socket.on("role_assigne", (role) => {
-  const carte = document.getElementById("carte-role");
-  const nomEl = document.getElementById("role-nom");
-  const descEl = document.getElementById("role-desc");
-  carte.className = role;
-  if (role === "loup") {
-    nomEl.textContent = "Loup-Garou";
-    descEl.textContent = "Chaque nuit, désignez une victime. Restez discret le jour.";
-  } else {
-    nomEl.textContent = "Villageois";
-    descEl.textContent = "Trouvez et éliminez les loups avant qu'ils ne vous dévorent tous.";
-  }
-});
-
-socket.on("changement_phase", (phase) => {
-  const dot = document.getElementById("phase-dot");
-  const label = document.getElementById("phase-label");
-  const zoneVote = document.getElementById("zone-vote");
-  dot.className = "phase-dot " + phase;
-  label.textContent = phase === "nuit" ? "La nuit tombe sur le village…" : "Le jour se lève — délibérez !";
-  zoneVote.style.display = phase === "jour" ? "block" : "none";
-  ajouterJournal(`— ${phase === "nuit" ? "La nuit tombe" : "Le jour se lève"} —`, "");
-});
-
-socket.on("reconnecte", ({ role, phase }) => {
-  document.getElementById("zone-connexion").style.display = "none";
-  document.getElementById("zone-jeu").style.display = "block";
-  if (role) socket.emit("_fake_role", role); // déclenche l'affichage local
-  if (phase) socket.on("changement_phase", () => {}); // sera géré par l'event normal
-});
-
-function sendVote() {
-  const target = document.getElementById("voteTarget").value;
-  if (!target) return;
-  socket.emit("vote", target);
-}
-
-socket.on("vote-update", (data) => {
-  ajouterJournal(`${data.voter} vote contre ${data.target}`, "vote");
-});
-
-socket.on("elimination", (nom) => {
-  ajouterJournal(`${nom} a été éliminé par le village !`, "elimination");
-});
-
-socket.on("joueur_deconnecte", (nom) => {
-  ajouterJournal(`${nom} s'est déconnecté…`, "");
-});
-
-socket.on("ejection", () => {
-  localStorage.removeItem("lgPseudo");
-  localStorage.removeItem("lgRoom");
-  document.getElementById("notif").classList.add("visible");
-});
-
-function ajouterJournal(texte, classe) {
-  const div = document.getElementById("results");
-  const p = document.createElement("p");
-  if (classe) p.classList.add(classe);
-  p.textContent = texte;
-  div.appendChild(p);
-  div.scrollTop = div.scrollHeight;
-}
-
-function toast(msg) {
-  const el = document.getElementById("toast");
-  el.textContent = msg;
-  el.classList.add("show");
-  setTimeout(() => el.classList.remove("show"), 2500);
-}
-</script>
+<script src="http://192.168.1.20:3000/socket.io/socket.io.js"></script>
+<script src="../../sock/socket.js"></script>
+<script src="../assets/js/role.js" ></script>
 </body>
 </html>
+
+ 

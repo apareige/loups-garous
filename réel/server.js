@@ -4,9 +4,8 @@ const io = require("socket.io")(http, {
 });
 
 // ─── Configuration ───────────────────────────────────────────────
-// Ces valeurs ne quittent JAMAIS le serveur — invisible côté client
-const ADMIN_PIN    = "1234";               // PIN saisi sur pin.html
-const ADMIN_SECRET = "tuaslebonmdp!BG!tuesunadmin"; // Token de session envoyé après PIN correct
+const ADMIN_PIN    = "1234";
+const ADMIN_SECRET = "tuaslebonmdp!BG!tuesunadmin";
 
 // ─── Stockage ────────────────────────────────────────────────────
 let parties = {};
@@ -54,6 +53,7 @@ function broadcastEtatRooms() {
     const etat = Object.entries(parties).map(([code, r]) => ({
         code,
         phase: r.state,
+        awaitingWitch: r.awaitingWitch || false,
         joueurs: Object.entries(r.players).map(([id, pseudo]) => ({
             id,
             nom:      pseudo,
@@ -104,37 +104,47 @@ function killPlayer(code, targetId, cause) {
 
 // ─── Phases ──────────────────────────────────────────────────────
 
+// La nuit commence — PAS de timer, l'admin clique "Suivant" pour résoudre
 function startNightPhase(code) {
     const r = parties[code];
     if (!r) return;
     r.state = "night"; r.wolfVotes = {}; r.nightActions = {};
     r.awaitingWitch = false; r.wolfTarget = null;
-    io.to(code).emit("phase", { phase: "night", duration: 45 });
+    r.voyanteUsed = false;   // réinitialisé chaque nuit
+
+    // On émet sans durée — le client n'affiche plus de compte à rebours
+    io.to(code).emit("phase", { phase: "night" });
+
     const loups = Object.keys(r.players).filter(id => r.roles[id] === "Loup-Garou" && r.alive[id] !== false);
     loups.forEach(id => io.to(id).emit("wolf-team", loups.map(wid => ({ id: wid, pseudo: r.players[wid] }))));
     broadcastEtatRooms();
-    r.nightTimer = setTimeout(() => resolveNight(code), 45000);
 }
 
+// Résolution de nuit déclenchée par l'admin ("Suivant")
 function resolveNight(code) {
     const r = parties[code];
     if (!r || r.state !== "night") return;
-    clearTimeout(r.nightTimer);
+
     let wolfTarget = null;
     if (Object.keys(r.wolfVotes).length > 0) {
         const counts = {};
         Object.values(r.wolfVotes).forEach(v => { counts[v] = (counts[v] || 0) + 1; });
         wolfTarget = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
     }
+
     const witchId = Object.keys(r.players).find(id => r.roles[id] === "Sorciere" && r.alive[id] !== false);
+
+    // Si la sorcière est vivante et qu'il y a une cible, on lui passe la main
+    // L'admin devra cliquer "Suivant sorcière" pour continuer
     if (witchId && wolfTarget) {
         io.to(witchId).emit("witch-turn", {
             target: wolfTarget, targetPseudo: r.players[wolfTarget],
             antidote: r.witch.antidote, poison: r.witch.poison,
             alivePlayers: getRoomPlayers(code).filter(p => p.vivant && p.id !== witchId)
         });
-        r.awaitingWitch = true; r.wolfTarget = wolfTarget;
-        r.witchTimer = setTimeout(() => applyNightResults(code, wolfTarget, null, null), 20000);
+        r.awaitingWitch = true;
+        r.wolfTarget = wolfTarget;
+        broadcastEtatRooms(); // l'admin voit que awaitingWitch = true
     } else {
         applyNightResults(code, wolfTarget, null, null);
     }
@@ -143,42 +153,58 @@ function resolveNight(code) {
 function applyNightResults(code, wolfTarget, antidoteUsed, poisonTarget) {
     const r = parties[code];
     if (!r) return;
-    clearTimeout(r.witchTimer); r.awaitingWitch = false;
+    r.awaitingWitch = false;
+
     const deaths = [];
     if (wolfTarget && !antidoteUsed) if (killPlayer(code, wolfTarget, "loups")) deaths.push(wolfTarget);
     if (poisonTarget)                if (killPlayer(code, poisonTarget, "poison")) deaths.push(poisonTarget);
     if (deaths.length === 0) io.to(code).emit("no-death-night");
+
     if (!checkWinCondition(code)) startDayPhase(code);
 }
 
+// Le jour commence — PAS de timer, l'admin clique "Suivant" pour résoudre le vote
 function startDayPhase(code) {
     const r = parties[code];
     if (!r) return;
     r.state = "day"; r.votes = {};
-    io.to(code).emit("phase", { phase: "day", duration: 90 });
+
+    // On émet sans durée
+    io.to(code).emit("phase", { phase: "day" });
     io.to(code).emit("players-update", getRoomPlayers(code));
     broadcastEtatRooms();
-    r.dayTimer = setTimeout(() => resolveVote(code), 90000);
 }
 
+// Résolution du vote déclenchée par l'admin ("Suivant")
 function resolveVote(code) {
     const r = parties[code];
     if (!r || r.state !== "day") return;
-    clearTimeout(r.dayTimer);
+
     if (Object.keys(r.votes).length === 0) {
         io.to(code).emit("vote-result", { eliminated: null, message: "Personne n'a été éliminé." });
-        if (!checkWinCondition(code)) startNightPhase(code); return;
+        if (!checkWinCondition(code)) startNightPhase(code);
+        return;
     }
+
     const counts = {};
     Object.values(r.votes).forEach(v => { counts[v] = (counts[v] || 0) + 1; });
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
     if (sorted.length > 1 && sorted[0][1] === sorted[1][1]) {
         io.to(code).emit("vote-result", { eliminated: null, message: "Égalité ! Personne n'est éliminé." });
-        if (!checkWinCondition(code)) startNightPhase(code); return;
+        if (!checkWinCondition(code)) startNightPhase(code);
+        return;
     }
+
     const eliminatedId = sorted[0][0];
     killPlayer(code, eliminatedId, "vote");
-    io.to(code).emit("vote-result", { eliminated: eliminatedId, pseudo: r.players[eliminatedId], role: r.roles[eliminatedId], votes: sorted });
+    io.to(code).emit("vote-result", {
+        eliminated: eliminatedId,
+        pseudo: r.players[eliminatedId],
+        role: r.roles[eliminatedId],
+        votes: sorted
+    });
+
     setTimeout(() => { if (!checkWinCondition(code)) startNightPhase(code); }, 3000);
 }
 
@@ -187,28 +213,13 @@ function resolveVote(code) {
 io.on("connection", (socket) => {
     console.log("Connexion :", socket.id);
 
-    // ══════════════════════════════════════════
-    //  AUTH ADMIN — 2 étapes
-    //
-    //  1. connexion_admin.html  → envoie "admin_pin" avec le PIN saisi
-    //               ← serveur répond "admin_pin_ok" + ADMIN_SECRET
-    //                 (ou "admin_pin_refuse")
-    //
-    //  2. admin.html → lit sessionStorage, envoie "admin_auth" avec le secret
-    //                ← serveur répond "admin_ok" (ou "admin_refuse")
-    // ══════════════════════════════════════════
+    // ── Auth admin ────────────────────────────
 
-    // Étape 1 : vérification du PIN (depuis pin.html)
     socket.on("admin_pin", (pin) => {
-        if (String(pin).trim() !== String(ADMIN_PIN).trim()) {
-            return socket.emit("admin_pin_refuse");
-        }
-        // PIN correct → on envoie le secret de session
-        // Le client ne connaît pas ce secret à l'avance — il vient du serveur
+        if (String(pin).trim() !== String(ADMIN_PIN).trim()) return socket.emit("admin_pin_refuse");
         socket.emit("admin_pin_ok", ADMIN_SECRET);
     });
 
-    // Étape 2 : validation du token (depuis admin.html)
     socket.on("admin_auth", (secret) => {
         if (secret !== ADMIN_SECRET) return socket.emit("admin_refuse");
         socket.isAdmin = true;
@@ -255,28 +266,48 @@ io.on("connection", (socket) => {
         const playerIDs = Object.keys(r.players);
         if (playerIDs.length < 4) return socket.emit("error", "Il faut au moins 4 joueurs.");
         const roles = generateRoles(playerIDs.length);
-        playerIDs.forEach((id, i) => { r.roles[id] = roles[i]; r.alive[id] = true; io.to(id).emit("your-role", { role: roles[i] }); });
+        playerIDs.forEach((id, i) => {
+            r.roles[id] = roles[i];
+            r.alive[id] = true;
+            io.to(id).emit("your-role", { role: roles[i] });
+        });
         io.to(codePartie).emit("game-started");
         startNightPhase(codePartie);
     });
 
+    // ── "Suivant" — résout la phase en cours et passe à la suivante ──
+    socket.on("admin_suivant", ({ codePartie }) => {
+        if (!socket.isAdmin) return;
+        const r = parties[codePartie];
+        if (!r) return;
+
+        if (r.state === "night") {
+            // Si la sorcière attend encore, on skip son tour et on applique
+            if (r.awaitingWitch) {
+                applyNightResults(codePartie, r.wolfTarget, null, null);
+            } else {
+                resolveNight(codePartie);
+            }
+        } else if (r.state === "day") {
+            resolveVote(codePartie);
+        }
+    });
+
+    // Forcer une phase spécifique (override manuel)
     socket.on("admin_phase", ({ codePartie, phase }) => {
         if (!socket.isAdmin) return;
         const r = parties[codePartie];
         if (!r) return;
-        clearTimeout(r.nightTimer); clearTimeout(r.dayTimer); clearTimeout(r.witchTimer);
         if (phase === "nuit") startNightPhase(codePartie);
         else if (phase === "jour") startDayPhase(codePartie);
     });
 
-        // Tuer manuellement un joueur (admin)
     socket.on("admin_tuer", ({ codePartie, joueurId, cause }) => {
         if (!socket.isAdmin) return;
         killPlayer(codePartie, joueurId, cause || "admin");
         if (!checkWinCondition(codePartie)) broadcastEtatRooms();
     });
 
-    // Ressusciter un joueur (admin)
     socket.on("admin_ressusciter", ({ codePartie, joueurId }) => {
         if (!socket.isAdmin) return;
         const r = parties[codePartie];
@@ -286,7 +317,6 @@ io.on("connection", (socket) => {
         broadcastEtatRooms();
     });
 
-    // Changer le rôle d'un joueur (admin)
     socket.on("admin_changer_role", ({ codePartie, joueurId, role }) => {
         if (!socket.isAdmin) return;
         const r = parties[codePartie];
@@ -296,26 +326,11 @@ io.on("connection", (socket) => {
         broadcastEtatRooms();
     });
 
-    // Forcer la résolution de nuit immédiatement
-    socket.on("admin_resoudre_nuit", ({ codePartie }) => {
-        if (!socket.isAdmin) return;
-        clearTimeout(parties[codePartie]?.nightTimer);
-        resolveNight(codePartie);
-    });
-
-    // Forcer la résolution du vote immédiatement
-    socket.on("admin_resoudre_vote", ({ codePartie }) => {
-        if (!socket.isAdmin) return;
-        clearTimeout(parties[codePartie]?.dayTimer);
-        resolveVote(codePartie);
-    });
-
-    // Passer le tour de la sorcière
+    // Passer le tour de la sorcière manuellement (alias de admin_suivant quand awaitingWitch)
     socket.on("admin_skip_sorciere", ({ codePartie }) => {
         if (!socket.isAdmin) return;
         const r = parties[codePartie];
         if (!r || !r.awaitingWitch) return;
-        clearTimeout(r.witchTimer);
         applyNightResults(codePartie, r.wolfTarget, null, null);
     });
 
@@ -323,9 +338,6 @@ io.on("connection", (socket) => {
         if (!socket.isAdmin) return;
         if (parties[codePartie]) {
             io.to(codePartie).emit("ejection");
-            clearTimeout(parties[codePartie].nightTimer);
-            clearTimeout(parties[codePartie].dayTimer);
-            clearTimeout(parties[codePartie].witchTimer);
             delete parties[codePartie];
         }
         broadcastEtatRooms();
@@ -356,7 +368,6 @@ io.on("connection", (socket) => {
         if (!parties[codePartie]) return socket.emit("error", "Room introuvable.");
         if (!pseudo?.trim())      return socket.emit("error", "Pseudo requis.");
         const r = parties[codePartie];
-        // Reconnexion
         const existing = Object.entries(r.players).find(([, p]) => p === pseudo.trim());
         if (existing) {
             const [oldId] = existing;
@@ -387,35 +398,37 @@ io.on("connection", (socket) => {
         io.to(codePartie).emit("players-update", getRoomPlayers(codePartie));
         broadcastEtatRooms();
     });
-    
+
     socket.on("check-room", (code) => {
-      if (parties[code]) {
-          socket.emit("room-valid");
-      } else {
-          socket.emit("room-invalid");
-      }
-  });
+        if (parties[code]) socket.emit("room-valid");
+        else               socket.emit("room-invalid");
+    });
 
     socket.on("vote", ({ room, target }) => {
         const r = parties[room];
         if (!r || r.state !== "day" || r.alive[socket.id] === false || r.alive[target] === false) return;
         r.votes[socket.id] = target;
         io.to(room).emit("vote-update", { votes: r.votes, players: r.players });
-        const aliveCount = Object.keys(r.players).filter(id => r.alive[id] !== false).length;
-        if (Object.keys(r.votes).length >= aliveCount) resolveVote(room);
+        // On ne résout plus automatiquement — l'admin décide avec "Suivant"
     });
 
     socket.on("wolf-vote", ({ room, target }) => {
         const r = parties[room];
         if (!r || r.state !== "night" || r.roles[socket.id] !== "Loup-Garou" || r.alive[socket.id] === false) return;
         r.wolfVotes[socket.id] = target;
-        const aliveWolves = Object.keys(r.players).filter(id => r.roles[id] === "Loup-Garou" && r.alive[id] !== false);
-        if (Object.keys(r.wolfVotes).length >= aliveWolves.length) resolveNight(room);
+        // On n'auto-résout plus — l'admin décide avec "Suivant"
+        io.to(room).emit("wolf-vote-update", {
+            votesCount: Object.keys(r.wolfVotes).length,
+            wolvesCount: Object.keys(r.players).filter(id => r.roles[id] === "Loup-Garou" && r.alive[id] !== false).length
+        });
     });
 
     socket.on("voyante-check", ({ room, target }) => {
         const r = parties[room];
         if (!r || r.roles[socket.id] !== "Voyante" || r.alive[socket.id] === false) return;
+        if (r.voyanteUsed) return socket.emit("error", "Tu as déjà utilisé ton pouvoir cette nuit.");
+        if (!r.players[target] || r.alive[target] === false) return socket.emit("error", "Cible invalide.");
+        r.voyanteUsed = true;
         socket.emit("voyante-result", { pseudo: r.players[target], role: r.roles[target] });
     });
 
@@ -423,14 +436,22 @@ io.on("connection", (socket) => {
         const r = parties[room];
         if (!r || r.roles[socket.id] !== "Cupidon" || r.lovers) return;
         r.lovers = lovers;
-        lovers.forEach(id => { const partnerId = lovers.find(l => l !== id); io.to(id).emit("you-are-lovers", { partner: r.players[partnerId] }); });
+        lovers.forEach(id => {
+            const partnerId = lovers.find(l => l !== id);
+            io.to(id).emit("you-are-lovers", { partner: r.players[partnerId] });
+        });
     });
 
     socket.on("witch-action", ({ room, antidote, poisonTarget }) => {
         const r = parties[room];
         if (!r || r.roles[socket.id] !== "Sorciere" || !r.awaitingWitch) return;
-        if (antidote && r.witch.antidote)   r.witch.antidote = false;
-        if (poisonTarget && r.witch.poison) r.witch.poison   = false;
+        // Vérifier que les potions demandées sont encore disponibles
+        if (antidote && !r.witch.antidote) return socket.emit("error", "L'antidote a déjà été utilisé.");
+        if (poisonTarget && !r.witch.poison) return socket.emit("error", "Le poison a déjà été utilisé.");
+        // Consommer immédiatement pour bloquer tout doublon
+        r.awaitingWitch = false;
+        if (antidote)    r.witch.antidote = false;
+        if (poisonTarget) r.witch.poison  = false;
         applyNightResults(room, r.wolfTarget, antidote, poisonTarget);
     });
 
