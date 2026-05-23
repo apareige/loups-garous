@@ -1,4 +1,4 @@
-const socket = io("http://192.168.1.20:3000");
+const socket = io("http://192.168.1.21:3000");
 
 const secret = sessionStorage.getItem("admin_secret");
 

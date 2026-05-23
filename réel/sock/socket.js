@@ -1,6 +1,7 @@
-const socket = io("http://192.168.1.20:3000");
+const socket = io("http://192.168.1.21:3000");
+alert("")
 
-alert("gardez votre role secret")
+
 
 let pseudo    = "";
 let codePartie = "";
@@ -24,6 +25,7 @@ if (pseudoSauve && roomSauvee) {
 
 // ─── REJOINDRE ───────────────────────────────────────────────
 function joinGame() {
+    alert("Les peusdo insultant seront valables d'un bannissement de la partie ! gardez votre role secret !")
     pseudo     = document.getElementById("pseudo").value.trim();
     codePartie = document.getElementById("codePartie").value.trim().toUpperCase();
     if (!pseudo || !codePartie) return alert("Pseudo et code requis !");

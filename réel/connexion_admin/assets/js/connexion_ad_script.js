@@ -5,7 +5,7 @@
    const PIN_LENGTH = 4;
    let pin = '';
    
-   const socket = io("http://192.168.1.20:3000");
+   const socket = io("http://192.168.1.21:3000");
    
    // --- Éléments DOM ---
    const dots      = [0,1,2,3].map(i => document.getElementById('d' + i));
