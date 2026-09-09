@@ -1,0 +1,372 @@
+/* ============================================
+   MAÎTRE DU JEU — style.css
+   ============================================ */
+
+/* --- Variables --- */
+:root {
+  --gold: #ffffff;
+  --gold-light: #e8c97a;
+  --gold-dim: #7a6030;
+  --bg: #0d0a06;
+  --bg2: #160f07;
+  --brown-dark: #1e1208;
+  --brown-mid: #2a1a0a;
+  --brown-btn: #231508;
+  --brown-btn-hover: #3a2210;
+  --text-dim: #8a7040;
+  --error: #a03020;
+}
+
+/* --- Reset --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- Body --- */
+body {
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'EB Garamond', serif;
+  color: var(--gold);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Gradient de fond */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgb(255, 200, 132) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 80% at 50% 100%, rgba(255, 119, 0, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Vignette */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 70% at 50% 50%, transparent 40%, rgba(0,0,0,0.75) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --- Grain overlay --- */
+.grain {
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* --- Container principal --- */
+.container {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 20px;
+  animation: fadeIn 1.2s ease both;
+}
+
+/* --- Animations --- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+  from { transform: scale(0.4); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-5px); }
+  40%     { transform: translateX(5px); }
+  60%     { transform: translateX(-4px); }
+  80%     { transform: translateX(4px); }
+}
+
+@keyframes rippleAnim {
+  to { transform: scale(3.5); opacity: 0; }
+}
+
+/* --- Typographie --- */
+.label-top {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.35em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  animation: fadeIn 1s 0.2s both;
+}
+
+h1 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.04em;
+  margin-bottom: 14px;
+  text-shadow: 0 0 30px rgba(0, 0, 0, 0.35);
+  animation: fadeIn 1s 0.3s both;
+}
+
+.subtitle {
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--text-dim);
+  margin-bottom: 28px;
+  animation: fadeIn 1s 0.4s both;
+}
+
+/* --- Séparateurs --- */
+.divider,
+.divider-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.divider        { animation: fadeIn 1s 0.5s both; }
+.divider-bottom { margin-bottom: 32px; animation: fadeIn 1s 0.6s both; }
+
+.divider::before, .divider::after,
+.divider-bottom::before, .divider-bottom::after {
+  content: '';
+  flex: 1;
+  max-width: 130px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold-dim));
+}
+
+.divider::after,
+.divider-bottom::after {
+  background: linear-gradient(to left, transparent, var(--gold-dim));
+}
+
+.divider-diamond {
+  color: var(--gold-dim);
+  font-size: 0.9rem;
+}
+
+/* --- Points PIN --- */
+.pin-display {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-bottom: 24px;
+  animation: fadeIn 1s 0.55s both;
+}
+
+.pin-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--gold-dim);
+  background: transparent;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.pin-dot.filled {
+  background: var(--gold);
+  border-color: var(--gold-light);
+  box-shadow: 0 0 10px rgba(201, 168, 76, 0.6);
+  animation: popIn 0.18s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+.pin-dot.error {
+  border-color: var(--error);
+  background: var(--error);
+  box-shadow: 0 0 10px rgba(160, 48, 32, 0.6);
+  animation: shake 0.4s ease both;
+}
+
+/* --- Message de statut --- */
+.status-msg {
+  min-height: 22px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  transition: color 0.3s, opacity 0.3s;
+  opacity: 0;
+}
+
+.status-msg.show    { opacity: 1; }
+.status-msg.success { color: var(--gold-light); }
+.status-msg.fail    { color: var(--error); }
+
+/* --- Clavier numérique --- */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 300px;
+  margin: 0 auto 20px;
+  animation: fadeIn 1s 0.7s both;
+}
+
+.keypad-last {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 300px;
+  margin: 0 auto 32px;
+  animation: fadeIn 1s 0.75s both;
+}
+
+.key {
+  background: var(--brown-btn);
+  border: 1px solid rgba(120, 80, 20, 0.45);
+  border-radius: 6px;
+  color: var(--gold-light);
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 0;
+  height: 68px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s, box-shadow 0.15s;
+  outline: none;
+  user-select: none;
+}
+
+.key::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,200,80,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.key:hover {
+  background: var(--brown-btn-hover);
+  border-color: var(--gold-dim);
+  box-shadow: 0 0 16px rgba(255, 187, 0, 0.12), inset 0 1px 0 rgba(201,168,76,0.15);
+  color: var(--gold-light);
+}
+
+.key:active,
+.key.pressed {
+  transform: scale(0.94);
+  background: #2e1a08;
+  box-shadow: 0 0 8px rgba(201, 168, 76, 0.2) inset;
+}
+
+/* Effet ripple */
+.key .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgb(201, 168, 76);
+  transform: scale(0);
+  animation: rippleAnim 0.5s linear;
+  pointer-events: none;
+}
+
+.key-suppr {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+}
+
+.key-spacer {
+  visibility: hidden;
+}
+
+/* --- Lien retour --- */
+.back-link {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  cursor: pointer;
+  animation: fadeIn 1s 0.85s both;
+  display: inline-block;
+}
+
+.back-link:hover {
+  color: var(--gold);
+}
+
+/* --- Overlay de succès --- */
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  z-index: 10;
+  pointer-events: none;
+  transition: background 0.6s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-overlay.active {
+  background: rgba(0, 0, 0, 0.85);
+  pointer-events: all;
+}
+
+.success-inner {
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.5s 0.3s, transform 0.5s 0.3s;
+}
+
+.success-overlay.active .success-inner {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.success-inner h2 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.8rem;
+  color: var(--gold-light);
+  text-shadow: 0 0 40px rgba(255, 0, 0, 0.6);
+  margin-bottom: 10px;
+}
+
+.success-inner p {
+  font-style: italic;
+  color: var(--text-dim);
+}
+
+/* --- Affichage des chiffres dans les PIN --- */
+.pin-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: var(--gold-light);
+}
+
+.pin-dot span {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.pin-dot.filled span {
+  opacity: 1;
+}

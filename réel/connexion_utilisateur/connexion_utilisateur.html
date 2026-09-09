@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choisissez votre pseudo</title>
+
+</head>
+<body>
+    <div class="game-container">
+        <header class="header">
+            <h1 class="main-title">CHOISISSEZ VOTRE PSEUDO</h1>
+            <p class="description">Ce nom sera annoncé dans le village. Choisissez-le avec soin.</p>
+        </header>
+        <div class="separator-container">
+            <hr class="separator-line">
+        </div>
+        <label class="form-label">Pseudo :</label>
+        <input type="text" id="pseudo" class="form-control" placeholder="Votre pseudo..." maxlength="20">
+        <button type="button" onclick="joinGame()">Rejoindre</button>
+    </div>
+    <script src="http://192.168.1.21:3000/socket.io/socket.io.js"></script>
+    <script src="../sock/socket.js"></script>
+
+
+</body>
+</html>

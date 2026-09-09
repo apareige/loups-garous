@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Maître du Jeu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+
+
+<!-- ── DASHBOARD ── -->
+<div id="zone-dashboard">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="status-dot"></div>
+      <h1>Tableau de bord</h1>
+    </div>
+    <span class="rooms-count" id="rooms-count">0 room active</span>
+  </div>
+
+  <div class="main">
+
+    <!-- Créer une room -->
+    <div class="new-room-bar">
+      <label>Nouvelle room</label>
+      <input type="text" id="new-room-code" placeholder="Code (ex: ABC)" maxlength="6" />
+      <button type="button" class="btn btn-gold" onclick="creerRoom()">Créer</button>
+    </div>
+
+    <!-- Grille des rooms -->
+    <div id="rooms-grid">
+      <div class="empty-rooms">Aucune room active pour l'instant.</div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="http://192.168.1.21:3000/socket.io/socket.io.js"></script>
+<script src="assets/js/admin_script.js" ></script>
+</body>
+</html>

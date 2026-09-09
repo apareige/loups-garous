@@ -1,0 +1,672 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --night: #0a0c12;
+  --deep: #10131e;
+  --card: #151822;
+  --border: #2a2f45;
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --blood: #8b1a1a;
+  --blood-light: #c0392b;
+  --silver: #8899bb;
+  --text: #d4cfc4;
+  --muted: #6a7080;
+  --wolf: #6b3fa0;
+  --wolf-light: #9b6fd4;
+  --voyante: #6a5acd;
+  --voyante-light: #9370db;
+  --sorciere: #8b008b;
+  --sorciere-light: #da70d6;
+  --cupidon: #ff69b4;
+  --cupidon-light: #ffb6c1;
+  --petite-fille: #ffd700;
+  --petite-fille-light: #fffacd;
+}
+
+body {
+  background: var(--night);
+  color: var(--text);
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 18px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Étoiles en arrière-plan */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 42% 8%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 70% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 88% 30%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 55%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 5% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 95% 65%, rgba(255,255,255,0.4) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* En-tête */
+header {
+  text-align: center;
+  padding: 2.5rem 0 2rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.village-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+
+h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1.1;
+  text-shadow: 0 0 40px rgba(201,168,76,0.3);
+}
+
+.subtitle {
+  margin-top: 0.8rem;
+  color: var(--muted);
+  font-style: italic;
+  font-size: 1rem;
+}
+
+/* Phase banner */
+#phase-banner {
+  background: var(--deep);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.5s ease;
+}
+
+#phase-banner.nuit {
+  background: linear-gradient(90deg, rgba(26, 10, 42, 0.6) 0%, rgba(10, 5, 20, 0.8) 100%);
+  border-color: var(--wolf);
+  box-shadow: 0 0 10px rgba(107, 63, 160, 0.3);
+}
+
+#phase-banner.jour {
+  background: linear-gradient(90deg, rgba(42, 30, 10, 0.6) 0%, rgba(20, 15, 5, 0.8) 100%);
+  border-color: var(--gold);
+  box-shadow: 0 0 10px rgba(201, 168, 76, 0.3);
+}
+
+.phase-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex-shrink: 0;
+  transition: all 0.5s ease;
+}
+
+.phase-dot.nuit {
+  background: var(--wolf-light);
+  box-shadow: 0 0 8px var(--wolf-light);
+}
+
+.phase-dot.jour {
+  background: var(--gold-light);
+  box-shadow: 0 0 8px var(--gold-light);
+}
+
+#phase-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: var(--silver);
+  letter-spacing: 0.1em;
+}
+
+/* Carte de connexion */
+#zone-connexion {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#zone-connexion h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  margin-bottom: 1.4rem;
+}
+
+.field { margin-bottom: 1rem; }
+
+label {
+  display: block;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+input[type="text"] {
+  width: 100%;
+  background: var(--deep);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  font-family: 'Crimson Text', serif;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.2);
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.btn-gold {
+  background: var(--gold);
+  color: var(--night);
+  font-weight: 700;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.btn-blood {
+  background: linear-gradient(145deg, var(--blood) 0%, var(--blood-light) 100%);
+  color: #f0d4d4;
+  font-weight: 600;
+  box-shadow: 0 2px 0 var(--blood-light);
+}
+
+.btn-blood:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+/* Carte rôle */
+#zone-jeu {
+  display: none;
+}
+
+#carte-role {
+  border-radius: 12px;
+  padding: 1.8rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.6s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Rôles spécifiques */
+#carte-role.villageois {
+  background: linear-gradient(135deg, #1a1f2e 0%, #12161f 100%);
+  border-color: var(--gold);
+  box-shadow: 0 0 15px rgba(201, 168, 76, 0.2);
+}
+#carte-role.villageois::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0.08;
+  animation: pulse-glow 4s infinite;
+}
+.villageois #role-nom {
+  color: var(--gold-light);
+  text-shadow: 0 0 5px rgba(201, 168, 76, 0.3);
+}
+
+#carte-role.loup {
+  background: linear-gradient(135deg, #1a0a2a 0%, #2a0a3a 100%);
+  border-color: var(--wolf);
+  box-shadow: 0 0 15px rgba(107, 63, 160, 0.3);
+}
+#carte-role.loup::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: var(--wolf-light);
+  opacity: 0.12;
+  animation: wolf-eyes 3s ease-in-out infinite;
+}
+.loup #role-nom {
+  color: var(--wolf-light);
+  text-shadow: 0 0 5px rgba(155, 111, 212, 0.5);
+}
+
+#carte-role.voyante {
+  background: linear-gradient(135deg, #1a1a3a 0%, #2a2a5a 100%);
+  border-color: var(--voyante);
+  box-shadow: 0 0 15px rgba(106, 90, 205, 0.3);
+}
+#carte-role.voyante::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: var(--voyante-light);
+  opacity: 0.12;
+  animation: voyante-glow 5s infinite alternate;
+}
+.voyante #role-nom {
+  color: var(--voyante-light);
+  text-shadow: 0 0 5px rgba(216, 191, 216, 0.4);
+}
+
+#carte-role.sorciere {
+  background: linear-gradient(135deg, #2a1a2a 0%, #3a1a3a 100%);
+  border-color: var(--sorciere);
+  box-shadow: 0 0 15px rgba(139, 0, 139, 0.3);
+}
+#carte-role.sorciere::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: var(--sorciere-light);
+  opacity: 0.12;
+  animation: sorciere-sparkle 4s infinite;
+}
+.sorciere #role-nom {
+  color: var(--sorciere-light);
+  text-shadow: 0 0 5px rgba(238, 130, 238, 0.5);
+}
+
+#carte-role.cupidon {
+  background: linear-gradient(135deg, #3a1a2a 0%, #5a1a3a 100%);
+  border-color: var(--cupidon);
+  box-shadow: 0 0 15px rgba(255, 105, 180, 0.3);
+}
+#carte-role.cupidon::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: var(--cupidon-light);
+  opacity: 0.12;
+  animation: cupidon-pulse 3s infinite;
+}
+.cupidon #role-nom {
+  color: var(--cupidon-light);
+  text-shadow: 0 0 5px rgba(255, 182, 193, 0.5);
+}
+
+#carte-role.petite-fille {
+  background: linear-gradient(135deg, #2a2a3a 0%, #3a3a5a 100%);
+  border-color: var(--petite-fille);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+#carte-role.petite-fille::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: var(--petite-fille-light);
+  opacity: 0.12;
+  animation: petite-fille-shimmer 6s infinite;
+}
+.petite-fille #role-nom {
+  color: var(--petite-fille-light);
+  text-shadow: 0 0 5px rgba(255, 250, 205, 0.5);
+}
+
+.role-header {
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+#role-nom {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.4rem;
+}
+
+#role-desc {
+  margin-top: 0.6rem;
+  font-style: italic;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.secret-badge {
+  display: inline-block;
+  margin-top: 0.8rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.06);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+/* Animations */
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(201, 168, 76, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); }
+}
+
+@keyframes wolf-eyes {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes voyante-glow {
+  0% { transform: scale(1); opacity: 0.1; }
+  100% { transform: scale(1.1); opacity: 0.2; }
+}
+
+@keyframes sorciere-sparkle {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.3; transform: scale(1.05); }
+}
+
+@keyframes cupidon-pulse {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.25; transform: scale(1.1); }
+}
+
+@keyframes petite-fille-shimmer {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.2; transform: rotate(5deg) scale(1.05); }
+}
+
+/* Liste des joueurs */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+#players {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#players li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  background: var(--deep);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border-left: 3px solid transparent;
+}
+
+#players li.loup {
+  border-left-color: var(--wolf-light);
+}
+
+#players li.voyante {
+  border-left-color: var(--voyante-light);
+}
+
+#players li.sorciere {
+  border-left-color: var(--sorciere-light);
+}
+
+#players li.cupidon {
+  border-left-color: var(--cupidon-light);
+}
+
+#players li.petite-fille {
+  border-left-color: var(--petite-fille-light);
+}
+
+#players li.mort {
+  opacity: 0.4;
+  text-decoration: line-through;
+  background: rgba(139, 26, 26, 0.1);
+}
+
+#players li.deconnecte {
+  opacity: 0.5;
+  background: rgba(136, 153, 187, 0.1);
+}
+
+.joueur-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.joueur-dot.vivant { background: #4caf80; }
+.joueur-dot.mort { background: var(--blood-light); }
+.joueur-dot.off { background: var(--muted); }
+
+/* Zone vote */
+#zone-vote {
+  display: none;
+}
+
+select {
+  width: 100%;
+  background: var(--deep);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  font-family: 'Crimson Text', serif;
+  font-size: 1rem;
+  outline: none;
+  margin-bottom: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+select:focus {
+  border-color: var(--blood-light);
+  box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.2);
+}
+
+/* Journal */
+#results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+#results p {
+  padding: 0.5rem 0.8rem;
+  border-radius: 5px;
+  background: var(--deep);
+  border-left: 2px solid var(--border);
+  font-size: 0.95rem;
+  color: var(--muted);
+  transition: all 0.3s ease;
+}
+
+#results p.elimination {
+  border-left-color: var(--blood-light);
+  color: #e08080;
+  background: rgba(139, 26, 26, 0.05);
+}
+
+#results p.vote {
+  border-left-color: var(--gold);
+  color: var(--gold-light);
+  background: rgba(201, 168, 76, 0.05);
+}
+
+#results p.loup {
+  border-left-color: var(--wolf-light);
+  color: var(--wolf-light);
+}
+
+#results p.voyante {
+  border-left-color: var(--voyante-light);
+  color: var(--voyante-light);
+}
+
+#results p.sorciere {
+  border-left-color: var(--sorciere-light);
+  color: var(--sorciere-light);
+}
+
+#results p.cupidon {
+  border-left-color: var(--cupidon-light);
+  color: var(--cupidon-light);
+}
+
+#results p.petite-fille {
+  border-left-color: var(--petite-fille-light);
+  color: var(--petite-fille-light);
+}
+
+.attente-msg {
+  text-align: center;
+  padding: 2rem 0;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.attente-msg .dots::after {
+  content: '';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%  { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
+
+/* Notification éjection */
+#notif {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+
+#notif.visible { display: flex; }
+
+.notif-box {
+  background: var(--card);
+  border: 1px solid var(--blood);
+  border-radius: 12px;
+  padding: 2.5rem;
+  text-align: center;
+  max-width: 320px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.notif-box h2 {
+  font-family: 'Cinzel', serif;
+  color: var(--blood-light);
+  margin-bottom: 0.8rem;
+}
+
+.notif-box p {
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+/* Effet de survol sur les cartes */
+#carte-role:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Transition pour l'affichage de la zone de jeu */
+#zone-jeu {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+#zone-jeu[style*="display: block"] {
+  opacity: 1;
+  transform: translateY(0);
+}

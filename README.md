@@ -53,7 +53,7 @@
 
 | Composant | Technologie(s) proposée(s) |
 |---|---|
-| Frontend | HTML5, CSS3, JavaScript  — servi via Apache2 |
+| Frontend | HTML5, CSS3, JavaScript (React ou Vue.js) — servi via Apache2 |
 | Backend | Node.js (Express) |
 | Base de données | MariaDB |
 | Communication | WebSocket (Socket.io) pour le temps réel |
